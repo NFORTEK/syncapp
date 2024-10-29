@@ -53,7 +53,7 @@ export default function syncMovies() {
             }
     
             // Construa a URL com os parâmetros de consulta (query params) sem codificar o `url`
-            const requestUrl = `http://api.ecosentry.cloud/v1/download-and-parse-m3u?m3uUrl=${url}&type=${type}`;
+            const requestUrl = `https://api.ecosentry.cloud/v1/download-and-parse-m3u?m3uUrl=${url}&type=${type}`;
     
             // Faça a requisição ao backend
             const response = await fetch(requestUrl, {
@@ -116,7 +116,7 @@ export default function syncMovies() {
                 bouquetId: selectedBouquet,
             };
 
-            const response = await fetch('http://api.ecosentry.cloud/v1/sync-m3u', {
+            const response = await fetch('https://api.ecosentry.cloud/v1/sync-m3u', {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
