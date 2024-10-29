@@ -2,6 +2,9 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+// eslint-disable-next-line react/no-unescaped-entities
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {}
 

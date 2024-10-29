@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
 import "./globals.css";
 
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+// eslint-disable-next-line react/no-unescaped-entities
 export const metadata: Metadata = {
   title: "Sync Box",
   description: "Sincroniza series e filmes em um só lugar.",

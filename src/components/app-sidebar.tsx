@@ -1,4 +1,4 @@
-import { Calendar, Clapperboard, Film, Home, Inbox, LogOut, Search, Settings, Settings2 } from "lucide-react"
+import { Clapperboard, Film, Home, LogOut } from "lucide-react"
 
 import {
   Sidebar,

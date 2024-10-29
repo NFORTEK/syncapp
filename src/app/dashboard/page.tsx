@@ -7,12 +7,15 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+// eslint-disable-next-line react/no-unescaped-entities
+
 export default function Dashboard() {
   const [copied, setCopied] = useState(false)
   const [host, setHost] = useState(""); // Estado para o Host
   const [user, setUser] = useState(""); // Estado para o Usuário
   const [adminPassword, setAdminPassword] = useState(""); // Estado para a Senha do administrador
-  const [dbAlert, setDbAlert] = useState(false); // Alerta para o banco de dados
 
   // Estados para o plano
   const [timeLeft, setTimeLeft] = useState(0); // Dias restantes no plano

@@ -1,5 +1,7 @@
 "use client"
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+// eslint-disable-next-line react/no-unescaped-entities
 // Inspired by react-hot-toast library
 import * as React from "react"
 

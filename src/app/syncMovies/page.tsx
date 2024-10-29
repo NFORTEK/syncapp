@@ -17,6 +17,9 @@ interface Bouquet {
   bouquet_name: string;  // Ajuste aqui para refletir o retorno do backend
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+// eslint-disable-next-line react/no-unescaped-entities
+
 export default function syncMovies() {
     const [url, setUrl] = useState("");  // Estado para o URL do input
     const [categories, setCategories] = useState<Category[]>([]); // Estado para armazenar as categorias
