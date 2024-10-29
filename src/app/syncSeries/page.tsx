@@ -53,7 +53,7 @@ export default function syncSeries() {
             }
     
             // Construa a URL com os parâmetros de consulta (query params) sem codificar o `url`
-            const requestUrl = `http://localhost:5000/v1/download-and-parse-m3u?m3uUrl=${url}&type=${type}`;
+            const requestUrl = `http://api.ecosentry.cloud/v1/download-and-parse-m3u?m3uUrl=${url}&type=${type}`;
     
             // Faça a requisição ao backend
             const response = await fetch(requestUrl, {
@@ -115,7 +115,7 @@ export default function syncSeries() {
             bouquetId: selectedBouquet,  // ID do bouquet selecionado
           };
       
-          const response = await fetch('http://localhost:5000/v1/sync-m3u-series', {
+          const response = await fetch('http://api.ecosentry.cloud/v1/sync-m3u-series', {
             method: 'POST',
             credentials: 'include',
             headers: {

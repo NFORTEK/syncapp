@@ -14,7 +14,7 @@ export default function Home() {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch("http://localhost:5000/v1/login", {
+      const response = await fetch("http://api.ecosentry.cloud/v1/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -85,3 +85,6 @@ export default function Home() {
     </div>
   );
 }
+
+
+// P2FMPRCyWDtbzFhG

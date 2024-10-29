@@ -37,7 +37,7 @@ export default function Dashboard() {
   // Função para buscar os dados do plano
   const fetchPlanData = async () => {
     try {
-      const response = await fetch('http://localhost:5000/v1/getPlan', {
+      const response = await fetch('http://api.ecosentry.cloud/v1/getPlan', {
         method: 'GET',
         credentials: 'include', // Para enviar os cookies de autenticação
       });
@@ -60,7 +60,7 @@ export default function Dashboard() {
   // Função para buscar as conexões de banco de dados do usuário
   const fetchUserConnections = async () => {
     try {
-      const response = await fetch('http://localhost:5000/v1/user-connections', {
+      const response = await fetch('http://api.ecosentry.cloud/v1/user-connections', {
         method: 'GET',
         credentials: 'include',
       });
@@ -108,7 +108,7 @@ export default function Dashboard() {
   // Função para salvar as credenciais do administrador
   const saveAdminCredentials = async () => {
     try {
-      const response = await fetch('http://localhost:5000/v1/save-credentials', {
+      const response = await fetch('http://api.ecosentry.cloud/v1/save-credentials', {
         method: 'POST',
         credentials: 'include', // Para enviar os cookies de autenticação
         headers: {
