@@ -20,8 +20,10 @@ interface Bouquet {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 // eslint-disable-next-line react/no-unescaped-entities
 
-export default function syncMovies() {
-    const [url, setUrl] = useState("");  // Estado para o URL do input
+export default function SyncMovies() {
+    const [provider, setProvider] = useState("");  // Estado para o provedor
+    const [username, setUsername] = useState("");  // Estado para o username
+    const [password, setPassword] = useState("");  // Estado para a password
     const [categories, setCategories] = useState<Category[]>([]); // Estado para armazenar as categorias
     const [bouquets, setBouquets] = useState<Bouquet[]>([]); // Estado para armazenar os bouquets
     const [error, setError] = useState<string | null>(null); // Estado para armazenar erros (string ou null)
@@ -33,14 +35,18 @@ export default function syncMovies() {
     const DownloadAndParse = async () => {
         setLoading(true); // Ativa o loading quando a requisição começa
         try {
-            // Verifica se o URL foi fornecido
-            if (!url) {
-                setError("Por favor, insira o URL da fonte.");
+            // Verifica se o provedor, username e password foram fornecidos
+            if (!provider || !username || !password) {
+                setError("Por favor, insira o provedor, username e password.");
                 setLoading(false); // Desativa o loading
                 return;
             }
     
-            const type = 1; // 1 para filmes, 2 para séries (ajuste conforme necessário)
+            const type = 'm3u_plus'; // Tipo fixo
+            const output = 'ts'; // Output fixo
+
+            // Construa a URL com os parâmetros necessários
+            const m3uUrl = `http://${provider}/get.php?username=${username}&password=${password}&type=${type}&output=${output}`;
     
             // Recupera o token do localStorage
             const token = localStorage.getItem("token");
@@ -52,8 +58,8 @@ export default function syncMovies() {
                 return;
             }
     
-            // Construa a URL com os parâmetros de consulta (query params) sem codificar o `url`
-            const requestUrl = `https://api.ecosentry.cloud/v1/download-and-parse-m3u?m3uUrl=${url}&type=${type}`;
+            // Construa a URL para a requisição ao backend
+            const requestUrl = `https://api.ecosentry.cloud/v1/download-and-parse-m3u?m3uUrl=${encodeURIComponent(m3uUrl)}&type=1`;
     
             // Faça a requisição ao backend
             const response = await fetch(requestUrl, {
@@ -150,12 +156,26 @@ export default function syncMovies() {
                             Sincronize os filmes
                         </CardTitle>
                         <CardDescription>
-                            Insira o URL da fonte que deseja sincronizar ao servidor e clique em "Sincronizar"
+                            Insira os detalhes abaixo e clique em "Sincronizar"
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <Input placeholder="URL da fonte"
-                            value={url} onChange={(e) => setUrl(e.target.value)} />
+                        <Input 
+                            placeholder="Provedor" 
+                            value={provider} 
+                            onChange={(e) => setProvider(e.target.value)} 
+                        />
+                        <Input 
+                            placeholder="Username" 
+                            value={username} 
+                            onChange={(e) => setUsername(e.target.value)} 
+                        />
+                        <Input 
+                            placeholder="Password" 
+                            type="password" 
+                            value={password} 
+                            onChange={(e) => setPassword(e.target.value)} 
+                        />
                         <Button className="mt-2" onClick={DownloadAndParse} disabled={loading}>
                             {loading ? "Sincronizando..." : "Sincronizar"}
                         </Button>
