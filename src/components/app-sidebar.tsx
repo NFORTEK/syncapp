@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/sidebar"
 import { Separator } from "@/components/ui/separator"
 import Image from "next/image"
-import { useRouter } from "next/router" // Importando useRouter para redirecionamento
+import { useRouter } from "next/navigation" // Importando useRouter para redirecionamento
 
 // Menu items.
 const items = [
