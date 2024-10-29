@@ -1,3 +1,4 @@
+'use client'
 import { Clapperboard, Film, Home, LogOut } from "lucide-react"
 
 import {
@@ -12,7 +13,7 @@ import {
 } from "@/components/ui/sidebar"
 import { Separator } from "@/components/ui/separator"
 import Image from "next/image"
-import { useRouter } from "next/navigation" // Importando useRouter para redirecionamento
+import { redirect } from "next/navigation" // Importando redirect para redirecionamento
 
 // Menu items.
 const items = [
@@ -34,11 +35,10 @@ const items = [
 ]
 
 export function AppSidebar() {
-  const router = useRouter() // Inicializando o router
 
   const handleLogout = () => {
     localStorage.removeItem("token") // Remove o token do localStorage
-    router.push("/") // Redireciona para a página de login
+    redirect("/") // Redireciona para a página de login
   }
 
   return (
