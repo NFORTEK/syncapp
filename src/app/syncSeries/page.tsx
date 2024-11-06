@@ -143,7 +143,7 @@ export default function SyncSeries() {
               Insira os detalhes abaixo e clique em "Sincronizar"
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="gap-2">
             <Input 
               placeholder="Provedor" 
               value={provider} 
@@ -210,7 +210,7 @@ export default function SyncSeries() {
                             />
                             <div>
                               <strong>{cat.category}</strong>
-                              <p className="text-sm text-muted-foreground">{cat.count} séries</p>
+                              <p className="text-sm text-muted-foreground">{cat.count} episodios</p>
                             </div>
                           </div>
                         </CardHeader>
