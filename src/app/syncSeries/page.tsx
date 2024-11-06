@@ -143,18 +143,20 @@ export default function SyncSeries() {
               Insira os detalhes abaixo e clique em "Sincronizar"
             </CardDescription>
           </CardHeader>
-          <CardContent className="gap-2">
+          <CardContent>
             <Input 
               placeholder="Provedor" 
               value={provider} 
               onChange={(e) => setProvider(e.target.value)} 
             />
             <Input 
+              className="mt-2"
               placeholder="Username" 
               value={username} 
               onChange={(e) => setUsername(e.target.value)} 
             />
             <Input 
+              className="mt-2"
               placeholder="Password" 
               type="password" 
               value={password} 
