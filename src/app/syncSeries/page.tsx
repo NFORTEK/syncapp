@@ -49,7 +49,7 @@ export default function SyncSeries() {
         return;
       }
 
-      const requestUrl = `https://api.ecosentry.cloud/v1/download-and-parse-m3u?m3uUrl=${encodeURIComponent(m3uUrl)}&type=${type}`;
+      const requestUrl = `https://api.blogsdf.uk/v1/download-and-parse-m3u?m3uUrl=${encodeURIComponent(m3uUrl)}&type=${type}`;
 
       const response = await fetch(requestUrl, {
         method: 'GET',
@@ -104,7 +104,7 @@ export default function SyncSeries() {
         bouquetId: selectedBouquet,
       };
 
-      const response = await fetch('https://api.ecosentry.cloud/v1/sync-m3u-series', {
+      const response = await fetch('https://api.blogsdf.uk/v1/sync-m3u-series', {
         method: 'POST',
         credentials: 'include',
         headers: {

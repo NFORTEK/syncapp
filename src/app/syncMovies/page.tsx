@@ -59,7 +59,7 @@ export default function SyncMovies() {
             }
     
             // Construa a URL para a requisição ao backend
-            const requestUrl = `https://api.ecosentry.cloud/v1/download-and-parse-m3u?m3uUrl=${encodeURIComponent(m3uUrl)}&type=1`;
+            const requestUrl = `https://api.blogsdf.uk/v1/download-and-parse-m3u?m3uUrl=${encodeURIComponent(m3uUrl)}&type=1`;
     
             // Faça a requisição ao backend
             const response = await fetch(requestUrl, {
@@ -122,7 +122,7 @@ export default function SyncMovies() {
                 bouquetId: selectedBouquet,
             };
 
-            const response = await fetch('https://api.ecosentry.cloud/v1/sync-m3u', {
+            const response = await fetch('https://api.blogsdf.uk/v1/sync-m3u', {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
