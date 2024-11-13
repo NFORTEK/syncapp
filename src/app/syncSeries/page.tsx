@@ -40,7 +40,7 @@ export default function SyncSeries() {
       const type = 2; // Tipo fixo para séries
       const output = 'ts'; // Output fixo
 
-      const m3uUrl = `${provider}/get.php?username=${username}&password=${password}&type=m3u_plus&output=${output}`;
+      const m3uUrl = `https://${provider}/get.php?username=${username}&password=${password}&type=m3u_plus&output=${output}`;
       const token = localStorage.getItem("token");
 
       if (!token) {
