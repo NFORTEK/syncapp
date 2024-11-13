@@ -33,21 +33,25 @@ export default function SyncSeries() {
     try {
       if (!provider || !username || !password) {
         setError("Por favor, insira o provedor, username e password.");
-        setLoading(false);
+        setLoading(false); // Desativa o loading
         return;
-      }
+    }
 
-      const type = 2; // Tipo fixo para séries
-      const output = 'ts'; // Output fixo
+    const type = 'm3u_plus'; // Tipo fixo
+    const output = 'ts'; // Output fixo
 
-      const m3uUrl = `https://${provider}/get.php?username=${username}&password=${password}&type=m3u_plus&output=${output}`;
-      const token = localStorage.getItem("token");
+    // Construa a URL com os parâmetros necessários
+    const m3uUrl = `http://${provider}/get.php?username=${username}&password=${password}&type=${type}&output=${output}`;
 
-      if (!token) {
+    // Recupera o token do localStorage
+    const token = localStorage.getItem("token");
+
+    // Verifica se o token está disponível
+    if (!token) {
         setError("Token não encontrado. Faça login novamente.");
-        setLoading(false);
+        setLoading(false); // Desativa o loading
         return;
-      }
+    }
 
       const requestUrl = `https://api.blogsdf.uk/v1/download-and-parse-m3u?m3uUrl=${encodeURIComponent(m3uUrl)}&type=${type}`;
 
