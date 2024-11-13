@@ -24,7 +24,7 @@ export default function SyncSeries() {
   const [bouquets, setBouquets] = useState<Bouquet[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
-  const [selectedBouquet, setSelectedBouquet] = useState<number | null>(null);
+  const [selectedBouquets, setSelectedBouquets] = useState<number[]>([]);  // Array de bouquets selecionados
   const [loading, setLoading] = useState(false);
   const [syncSuccess, setSyncSuccess] = useState(false);
 
@@ -85,8 +85,12 @@ export default function SyncSeries() {
     );
   };
 
-  const selectBouquet = (id: number) => {
-    setSelectedBouquet(id);
+  const toggleBouquet = (id: number) => {
+    setSelectedBouquets((prevSelected) =>
+      prevSelected.includes(id)
+        ? prevSelected.filter((bqId) => bqId !== id)
+        : [...prevSelected, id]
+    );
   };
 
   const syncWithServer = async () => {
@@ -101,7 +105,7 @@ export default function SyncSeries() {
 
       const body = {
         selectedCategories,
-        bouquetId: selectedBouquet,
+        bouquetIds: selectedBouquets.length === 1 ? [selectedBouquets[0]] : selectedBouquets,
       };
 
       const response = await fetch('https://api.blogsdf.uk/v1/sync-m3u-series', {
@@ -229,8 +233,8 @@ export default function SyncSeries() {
                         <CardHeader>
                           <div className="flex items-center gap-4">
                             <Checkbox
-                              checked={selectedBouquet === bq.id}
-                              onCheckedChange={() => selectBouquet(bq.id)}
+                              checked={selectedBouquets.includes(bq.id)}
+                              onCheckedChange={() => toggleBouquet(bq.id)}
                             />
                             <strong>{bq.bouquet_name}</strong>
                           </div>
@@ -241,7 +245,7 @@ export default function SyncSeries() {
                 </div>
 
                 <div className="mt-4">
-                  <Button onClick={syncWithServer} disabled={loading || selectedCategories.length === 0 || selectedBouquet === null}>
+                  <Button onClick={syncWithServer} disabled={loading || selectedCategories.length === 0 || selectedBouquets.length === 0}>
                     {loading ? "Sincronizando..." : "Sincronizar com Servidor"}
                   </Button>
                 </div>
