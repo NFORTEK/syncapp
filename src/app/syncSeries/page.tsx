@@ -29,34 +29,36 @@ export default function SyncSeries() {
   const [syncSuccess, setSyncSuccess] = useState(false);
 
   const DownloadAndParse = async () => {
-    setLoading(true);
+    setLoading(true);  // Ativa o carregamento
     try {
+      // Verifica se os campos obrigatórios estão preenchidos
       if (!provider || !username || !password) {
         setError("Por favor, insira o provedor, username e password.");
-        setLoading(false); // Desativa o loading
+        setLoading(false);  // Desativa o carregamento
         return;
-    }
-
-    const type = 'm3u_plus'; // Tipo fixo
-    const output = 'ts'; // Output fixo
-
-    // Construa a URL com os parâmetros necessários
-    const m3uUrl = `http://${provider}/get.php?username=${username}&password=${password}&type=${type}&output=${output}`;
-
-    // Recupera o token do localStorage
-    const token = localStorage.getItem("token");
-    console.log(`URL da requisição: ${m3uUrl}`);
-
-
-    // Verifica se o token está disponível
-    if (!token) {
+      }
+  
+      const type = 'm3u_plus'; // Tipo fixo
+      const output = 'ts'; // Output fixo
+  
+      // Construa a URL com os parâmetros necessários
+      const m3uUrl = `http://${provider}/get.php?username=${username}&password=${password}&type=${type}&output=${output}`;
+  
+      // Recupera o token do localStorage
+      const token = localStorage.getItem("token");
+  
+      if (!token) {
         setError("Token não encontrado. Faça login novamente.");
-        setLoading(false); // Desativa o loading
+        setLoading(false);  // Desativa o carregamento
         return;
-    }
-
+      }
+  
+      console.log(`URL da requisição: ${m3uUrl}`);
+  
+      // Construa a URL da API para enviar
       const requestUrl = `https://api.blogsdf.uk/v1/download-and-parse-m3u?m3uUrl=${encodeURIComponent(m3uUrl)}&type=2`;
-
+  
+      // Faça a requisição para o backend
       const response = await fetch(requestUrl, {
         method: 'GET',
         credentials: 'include',
@@ -65,23 +67,33 @@ export default function SyncSeries() {
           'Content-Type': 'application/json',
         },
       });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setCategories(data.categories || []);
-        setBouquets(data.bouquets || []);
-        setError(null);
-      } else {
-        setError(data.erro || "Erro ao processar o arquivo M3U.");
+  
+      // Verifique se a resposta foi bem-sucedida
+      if (!response.ok) {
+        // Se a resposta não for 2xx, trata o erro
+        const errorData = await response.json();
+        setError(errorData.erro || "Erro ao processar o arquivo M3U.");
+        setLoading(false);  // Desativa o carregamento
+        return;
       }
+  
+      // Caso a resposta seja bem-sucedida, processe os dados
+      const data = await response.json();
+  
+      // Atualize o estado com os dados recebidos
+      setCategories(data.categories || []);
+      setBouquets(data.bouquets || []);
+      setError(null);  // Limpa o erro em caso de sucesso
+  
     } catch (error) {
+      // Em caso de erro durante a execução da requisição
       console.error("Erro ao fazer download e parsing do M3U:", error);
       setError("Erro ao conectar com o servidor.");
     } finally {
-      setLoading(false);
+      setLoading(false);  // Desativa o carregamento, independentemente do sucesso ou erro
     }
   };
+  
 
   const toggleCategory = (id: number) => {
     setSelectedCategories((prevSelected) =>
