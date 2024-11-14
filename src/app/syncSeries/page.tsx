@@ -45,6 +45,8 @@ export default function SyncSeries() {
 
     // Recupera o token do localStorage
     const token = localStorage.getItem("token");
+    console.log(`URL da requisição: ${m3uUrl}`);
+
 
     // Verifica se o token está disponível
     if (!token) {
