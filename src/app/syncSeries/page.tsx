@@ -53,7 +53,7 @@ export default function SyncSeries() {
         return;
     }
 
-      const requestUrl = `https://api.blogsdf.uk/v1/download-and-parse-m3u?m3uUrl=${encodeURIComponent(m3uUrl)}&type=${type}`;
+      const requestUrl = `https://api.blogsdf.uk/v1/download-and-parse-m3u?m3uUrl=${encodeURIComponent(m3uUrl)}&type=2`;
 
       const response = await fetch(requestUrl, {
         method: 'GET',
