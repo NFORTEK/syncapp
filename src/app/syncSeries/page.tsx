@@ -24,33 +24,41 @@ export default function SyncSeries() {
   const [bouquets, setBouquets] = useState<Bouquet[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
-  const [selectedBouquet, setSelectedBouquet] = useState<number | null>(null);
+  const [selectedBouquets, setSelectedBouquets] = useState<number[]>([]);  // Array de bouquets selecionados
   const [loading, setLoading] = useState(false);
   const [syncSuccess, setSyncSuccess] = useState(false);
 
   const DownloadAndParse = async () => {
-    setLoading(true);
+    setLoading(true);  // Ativa o carregamento
     try {
+      // Verifica se os campos obrigatórios estão preenchidos
       if (!provider || !username || !password) {
         setError("Por favor, insira o provedor, username e password.");
-        setLoading(false);
+        setLoading(false);  // Desativa o carregamento
         return;
       }
-
-      const type = 2; // Tipo fixo para séries
+  
+      const type = 'm3u_plus'; // Tipo fixo
       const output = 'ts'; // Output fixo
-
-      const m3uUrl = `http://${provider}/get.php?username=${username}&password=${password}&type=m3u_plus&output=${output}`;
+  
+      // Construa a URL com os parâmetros necessários
+      const m3uUrl = `http://${provider}/get.php?username=${username}&password=${password}&type=${type}&output=${output}`;
+  
+      // Recupera o token do localStorage
       const token = localStorage.getItem("token");
-
+  
       if (!token) {
         setError("Token não encontrado. Faça login novamente.");
-        setLoading(false);
+        setLoading(false);  // Desativa o carregamento
         return;
       }
-
-      const requestUrl = `https://api.blogsdf.uk/v1/download-and-parse-m3u?m3uUrl=${encodeURIComponent(m3uUrl)}&type=${type}`;
-
+  
+      console.log(`URL da requisição: ${m3uUrl}`);
+  
+      // Construa a URL da API para enviar
+      const requestUrl = `https://api.blogsdf.uk/v1/download-and-parse-m3u?m3uUrl=${encodeURIComponent(m3uUrl)}&type=2`;
+  
+      // Faça a requisição para o backend
       const response = await fetch(requestUrl, {
         method: 'GET',
         credentials: 'include',
@@ -59,23 +67,33 @@ export default function SyncSeries() {
           'Content-Type': 'application/json',
         },
       });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setCategories(data.categories || []);
-        setBouquets(data.bouquets || []);
-        setError(null);
-      } else {
-        setError(data.erro || "Erro ao processar o arquivo M3U.");
+  
+      // Verifique se a resposta foi bem-sucedida
+      if (!response.ok) {
+        // Se a resposta não for 2xx, trata o erro
+        const errorData = await response.json();
+        setError(errorData.erro || "Erro ao processar o arquivo M3U.");
+        setLoading(false);  // Desativa o carregamento
+        return;
       }
+  
+      // Caso a resposta seja bem-sucedida, processe os dados
+      const data = await response.json();
+  
+      // Atualize o estado com os dados recebidos
+      setCategories(data.categories || []);
+      setBouquets(data.bouquets || []);
+      setError(null);  // Limpa o erro em caso de sucesso
+  
     } catch (error) {
+      // Em caso de erro durante a execução da requisição
       console.error("Erro ao fazer download e parsing do M3U:", error);
       setError("Erro ao conectar com o servidor.");
     } finally {
-      setLoading(false);
+      setLoading(false);  // Desativa o carregamento, independentemente do sucesso ou erro
     }
   };
+  
 
   const toggleCategory = (id: number) => {
     setSelectedCategories((prevSelected) =>
@@ -85,8 +103,12 @@ export default function SyncSeries() {
     );
   };
 
-  const selectBouquet = (id: number) => {
-    setSelectedBouquet(id);
+  const toggleBouquet = (id: number) => {
+    setSelectedBouquets((prevSelected) =>
+      prevSelected.includes(id)
+        ? prevSelected.filter((bqId) => bqId !== id)
+        : [...prevSelected, id]
+    );
   };
 
   const syncWithServer = async () => {
@@ -101,7 +123,7 @@ export default function SyncSeries() {
 
       const body = {
         selectedCategories,
-        bouquetId: selectedBouquet,
+        bouquetIds: selectedBouquets.length === 1 ? [selectedBouquets[0]] : selectedBouquets,
       };
 
       const response = await fetch('https://api.blogsdf.uk/v1/sync-m3u-series', {
@@ -229,8 +251,8 @@ export default function SyncSeries() {
                         <CardHeader>
                           <div className="flex items-center gap-4">
                             <Checkbox
-                              checked={selectedBouquet === bq.id}
-                              onCheckedChange={() => selectBouquet(bq.id)}
+                              checked={selectedBouquets.includes(bq.id)}
+                              onCheckedChange={() => toggleBouquet(bq.id)}
                             />
                             <strong>{bq.bouquet_name}</strong>
                           </div>
@@ -241,7 +263,7 @@ export default function SyncSeries() {
                 </div>
 
                 <div className="mt-4">
-                  <Button onClick={syncWithServer} disabled={loading || selectedCategories.length === 0 || selectedBouquet === null}>
+                  <Button onClick={syncWithServer} disabled={loading || selectedCategories.length === 0 || selectedBouquets.length === 0}>
                     {loading ? "Sincronizando..." : "Sincronizar com Servidor"}
                   </Button>
                 </div>
