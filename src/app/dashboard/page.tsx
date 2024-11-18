@@ -34,6 +34,24 @@ export default function Dashboard() {
     setTimeout(() => setCopied(false), 2000)
   }
 
+  const copyToClipboard2 = () => {
+    navigator.clipboard.writeText("CREATE USER 'novo_usuario'@'%' IDENTIFIED BY 'senha_segura';")
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  const copyToClipboard3 = () => {
+    navigator.clipboard.writeText("GRANT ALL PRIVILEGES ON *.* TO 'novo_usuario'@'%' WITH GRANT OPTION;")
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  const copyToClipboard4 = () => {
+    navigator.clipboard.writeText("FLUSH PRIVILEGES;")
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
   // Função para buscar os dados do plano
   const fetchPlanData = async () => {
     try {
@@ -247,7 +265,7 @@ export default function Dashboard() {
                 <Button
                   variant="outline"
                   size="icon"
-                  onClick={copyToClipboard}
+                  onClick={copyToClipboard2}
                   className="flex-shrink-0"
                 >
                   <Copy className="h-4 w-4" />
@@ -265,7 +283,7 @@ export default function Dashboard() {
                 <Button
                   variant="outline"
                   size="icon"
-                  onClick={copyToClipboard}
+                  onClick={copyToClipboard3}
                   className="flex-shrink-0"
                 >
                   <Copy className="h-4 w-4" />
@@ -283,7 +301,7 @@ export default function Dashboard() {
                 <Button
                   variant="outline"
                   size="icon"
-                  onClick={copyToClipboard}
+                  onClick={copyToClipboard4}
                   className="flex-shrink-0"
                 >
                   <Copy className="h-4 w-4" />
