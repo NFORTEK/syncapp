@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface Category {
   id: number;
@@ -25,7 +25,11 @@ const fetchWithTimeout = (url: string, options: RequestInit, timeout = 7200000) 
   ]);
 };
 
+
+
 export default function SyncSeries() {
+  const [syncStartTime, setSyncStartTime] = useState<number | null>(null);
+  const [showLongSyncMessage, setShowLongSyncMessage] = useState(false);
   const [provider, setProvider] = useState("");  // Estado para o provedor
   const [username, setUsername] = useState("");  // Estado para o username
   const [password, setPassword] = useState("");  // Estado para a senha
@@ -36,6 +40,19 @@ export default function SyncSeries() {
   const [selectedBouquets, setSelectedBouquets] = useState<number[]>([]);  // Array de bouquets selecionados
   const [loading, setLoading] = useState(false);
   const [syncSuccess, setSyncSuccess] = useState(false);
+  
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (loading && syncStartTime) {
+      timer = setTimeout(() => {
+        const elapsedTime = Date.now() - syncStartTime;
+        if (elapsedTime >= 300000) { // 5 minutos
+          setShowLongSyncMessage(true);
+        }
+      }, 300000); // Verifica após 5 minutos
+    }
+    return () => clearTimeout(timer);
+  }, [loading, syncStartTime]);
 
   const DownloadAndParse = async () => {
     setLoading(true);  // Ativa o carregamento
@@ -104,8 +121,11 @@ export default function SyncSeries() {
     );
   };
 
+
   const syncWithServer = async () => {
     setLoading(true);
+    setShowLongSyncMessage(false);
+    setSyncStartTime(Date.now());
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -119,19 +139,15 @@ export default function SyncSeries() {
         bouquetIds: selectedBouquets.length === 1 ? [selectedBouquets[0]] : selectedBouquets,
       };
 
-      const response = await fetchWithTimeout(
-        'https://api.blogsdf.uk/v1/sync-m3u-series',
-        {
-          method: 'POST',
-          credentials: 'include',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(body),
+      const response = await fetch('https://api.blogsdf.uk/v1/sync-m3u-series', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
         },
-        7200000
-      ) as Response;
+        body: JSON.stringify(body),
+      });
 
       const data = await response.json();
 
@@ -144,13 +160,10 @@ export default function SyncSeries() {
       }
     } catch (error: any) {
       console.error("Erro ao sincronizar com o servidor:", error.message || error);
-      setError(
-        error.message === 'Request timed out'
-          ? 'A sincronização demorou demais. Tente novamente mais tarde.'
-          : 'Erro ao sincronizar com o servidor.'
-      );
+      setError('Erro ao sincronizar com o servidor.');
     } finally {
       setLoading(false);
+      setSyncStartTime(null);
     }
   };
   
@@ -192,6 +205,21 @@ export default function SyncSeries() {
           </CardContent>
         </Card>
       </div>
+
+      {showLongSyncMessage && (
+        <div className="w-full mt-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>
+                Sincronização em Andamento
+              </CardTitle>
+              <CardDescription>
+                A sincronização está demorando mais do que o esperado. Os arquivos continuarão sendo inseridos em segundo plano e todos estarão disponíveis em até 30 minutos.
+              </CardDescription>
+            </CardHeader>
+          </Card>
+        </div>
+      )}
 
       {syncSuccess ? (
         <div className="w-full mt-4">
