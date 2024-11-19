@@ -201,7 +201,6 @@ export default function SyncSeries() {
             <Button className="mt-2" onClick={DownloadAndParse} disabled={loading}>
               {loading ? "Sincronizando..." : "Sincronizar"}
             </Button>
-            {error && <p className="text-red-500 mt-2">{error}</p>}
           </CardContent>
         </Card>
       </div>
