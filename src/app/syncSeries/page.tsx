@@ -16,7 +16,7 @@ interface Bouquet {
   bouquet_name: string;
 }
 
-const fetchWithTimeout = (url: string, options: RequestInit, timeout = 600000) => {
+const fetchWithTimeout = (url: string, options: RequestInit, timeout = 7200000) => {
   return Promise.race([
     fetch(url, options),
     new Promise((_, reject) =>
@@ -130,7 +130,7 @@ export default function SyncSeries() {
           },
           body: JSON.stringify(body),
         },
-        600000 // 10 minutos de timeout
+        7200000
       ) as Response;
 
       const data = await response.json();
