@@ -16,6 +16,15 @@ interface Bouquet {
   bouquet_name: string;
 }
 
+const fetchWithTimeout = (url: string, options: RequestInit, timeout = 600000) => {
+  return Promise.race([
+    fetch(url, options),
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('Request timed out')), timeout)
+    ),
+  ]);
+};
+
 export default function SyncSeries() {
   const [provider, setProvider] = useState("");  // Estado para o provedor
   const [username, setUsername] = useState("");  // Estado para o username
@@ -31,34 +40,26 @@ export default function SyncSeries() {
   const DownloadAndParse = async () => {
     setLoading(true);  // Ativa o carregamento
     try {
-      // Verifica se os campos obrigatórios estão preenchidos
       if (!provider || !username || !password) {
         setError("Por favor, insira o provedor, username e password.");
-        setLoading(false);  // Desativa o carregamento
+        setLoading(false);
         return;
       }
-  
+
       const type = 'm3u_plus'; // Tipo fixo
       const output = 'ts'; // Output fixo
-  
-      // Construa a URL com os parâmetros necessários
       const m3uUrl = `http://${provider}/get.php?username=${username}&password=${password}&type=${type}&output=${output}`;
-  
-      // Recupera o token do localStorage
+
       const token = localStorage.getItem("token");
-  
       if (!token) {
         setError("Token não encontrado. Faça login novamente.");
-        setLoading(false);  // Desativa o carregamento
+        setLoading(false);
         return;
       }
-  
+
       console.log(`URL da requisição: ${m3uUrl}`);
-  
-      // Construa a URL da API para enviar
       const requestUrl = `https://api.blogsdf.uk/v1/download-and-parse-m3u?m3uUrl=${encodeURIComponent(m3uUrl)}&type=2`;
-  
-      // Faça a requisição para o backend
+
       const response = await fetch(requestUrl, {
         method: 'GET',
         credentials: 'include',
@@ -67,33 +68,25 @@ export default function SyncSeries() {
           'Content-Type': 'application/json',
         },
       });
-  
-      // Verifique se a resposta foi bem-sucedida
+
       if (!response.ok) {
-        // Se a resposta não for 2xx, trata o erro
         const errorData = await response.json();
         setError(errorData.erro || "Erro ao processar o arquivo M3U.");
-        setLoading(false);  // Desativa o carregamento
+        setLoading(false);
         return;
       }
-  
-      // Caso a resposta seja bem-sucedida, processe os dados
+
       const data = await response.json();
-  
-      // Atualize o estado com os dados recebidos
       setCategories(data.categories || []);
       setBouquets(data.bouquets || []);
-      setError(null);  // Limpa o erro em caso de sucesso
-  
+      setError(null);
     } catch (error) {
-      // Em caso de erro durante a execução da requisição
       console.error("Erro ao fazer download e parsing do M3U:", error);
       setError("Erro ao conectar com o servidor.");
     } finally {
-      setLoading(false);  // Desativa o carregamento, independentemente do sucesso ou erro
+      setLoading(false);
     }
   };
-  
 
   const toggleCategory = (id: number) => {
     setSelectedCategories((prevSelected) =>
@@ -126,15 +119,19 @@ export default function SyncSeries() {
         bouquetIds: selectedBouquets.length === 1 ? [selectedBouquets[0]] : selectedBouquets,
       };
 
-      const response = await fetch('https://api.blogsdf.uk/v1/sync-m3u-series', {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
+      const response = await fetchWithTimeout(
+        'https://api.blogsdf.uk/v1/sync-m3u-series',
+        {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(body),
         },
-        body: JSON.stringify(body),
-      });
+        600000 // 10 minutos de timeout
+      ) as Response;
 
       const data = await response.json();
 
@@ -145,14 +142,18 @@ export default function SyncSeries() {
         console.error("Erro na sincronização:", data.message);
         setError(data.message || 'Erro na sincronização.');
       }
-    } catch (error) {
-      console.error("Erro ao sincronizar com o servidor:", error);
-      setError('Erro ao sincronizar com o servidor.');
+    } catch (error: any) {
+      console.error("Erro ao sincronizar com o servidor:", error.message || error);
+      setError(
+        error.message === 'Request timed out'
+          ? 'A sincronização demorou demais. Tente novamente mais tarde.'
+          : 'Erro ao sincronizar com o servidor.'
+      );
     } finally {
       setLoading(false);
     }
   };
-
+  
   return (
     <div>
       <div className="w-full mt-2">
