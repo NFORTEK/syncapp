@@ -26,6 +26,7 @@ export default function SyncMovies() {
     const [password, setPassword] = useState("");  // Estado para a password
     const [categories, setCategories] = useState<Category[]>([]); // Estado para armazenar as categorias
     const [bouquets, setBouquets] = useState<Bouquet[]>([]); // Estado para armazenar os bouquets
+    const [selectedBouquets, setSelectedBouquets] = useState<number[]>([]); // Agora permite múltiplos bouquets
     const [error, setError] = useState<string | null>(null); // Estado para armazenar erros (string ou null)
     const [selectedCategories, setSelectedCategories] = useState<number[]>([]); // Estado para as categorias selecionadas
     const [selectedBouquet, setSelectedBouquet] = useState<number | null>(null); // Estado para o bouquet selecionado
@@ -100,10 +101,14 @@ export default function SyncMovies() {
         );
     };
 
-    // Função para alternar a seleção dos bouquets
-    const selectBouquet = (id: number) => {
-        setSelectedBouquet(id); // Define o bouquet selecionado
+    const toggleBouquet = (id: number) => {
+        setSelectedBouquets((prevSelected) =>
+            prevSelected.includes(id)
+                ? prevSelected.filter((bqId) => bqId !== id) // Remove o bouquet se já estiver selecionado
+                : [...prevSelected, id] // Adiciona o bouquet se não estiver selecionado
+        );
     };
+    
 
     // Função para enviar as categorias e o bouquet selecionados
     const syncWithServer = async () => {
@@ -119,7 +124,7 @@ export default function SyncMovies() {
             // Construa o corpo da requisição
             const body = {
                 selectedCategories,
-                bouquetId: selectedBouquet,
+                bouquetIds: selectedBouquets, // Envia os IDs dos bouquets selecionados
             };
 
             const response = await fetch('https://api.blogsdf.uk/v1/sync-m3u', {
@@ -247,8 +252,8 @@ export default function SyncMovies() {
                                                 <CardHeader>
                                                     <div className="flex items-center gap-4">
                                                         <Checkbox
-                                                            checked={selectedBouquet === bq.id}
-                                                            onCheckedChange={() => selectBouquet(bq.id)}
+                                                            checked={selectedBouquets.includes(bq.id)}
+                                                            onCheckedChange={() => toggleBouquet(bq.id)}
                                                         />
                                                         <strong>{bq.bouquet_name}</strong>
                                                     </div>
@@ -258,9 +263,10 @@ export default function SyncMovies() {
                                     </div>
                                 </div>
 
+
                                 {/* Botão Sincronizar com o Servidor */}
                                 <div className="mt-4">
-                                    <Button onClick={syncWithServer} disabled={loading || selectedCategories.length === 0 || selectedBouquet === null}>
+                                    <Button onClick={syncWithServer} disabled={loading || selectedCategories.length === 0 || selectedBouquets === null}>
                                         {loading ? "Sincronizando..." : "Sincronizar com Servidor"}
                                     </Button>
                                 </div>
